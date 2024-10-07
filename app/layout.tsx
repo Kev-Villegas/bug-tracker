@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 import Header from "./_components/Header";
 
 const geistSans = localFont({
@@ -31,6 +32,18 @@ export default function RootLayout({
       >
         <Header />
         <main>{children}</main>
+        <Toaster
+          position="bottom-center"
+          reverseOrder={true}
+          gutter={8}
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: "#d1d5db",
+              color: "#0a0a0a",
+            },
+          }}
+        />
       </body>
     </html>
   );
