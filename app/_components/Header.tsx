@@ -3,8 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { ShieldHalf } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const Header = () => {
+  const currentPath = usePathname();
   const links = [
     { id: 1, label: "Home", href: "/" },
     { id: 2, label: "Bugs", href: "/bugs" },
@@ -20,7 +22,7 @@ const Header = () => {
           <li key={link.id}>
             <Link
               href={link.href}
-              className="text-zinc-600 transition-all hover:text-zinc-800"
+              className={` ${link.href === currentPath ? "font-semibold text-zinc-800" : "text-zinc-600 hover:text-zinc-800"} transition-all`}
             >
               {link.label}
             </Link>
