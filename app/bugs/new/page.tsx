@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
@@ -8,7 +9,9 @@ import Spinner from "@/app/_components/Spinner";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/app/_components/ui/textarea";
+import { createBugSchema } from "@/app/_schemas/validationSchemas";
 import {
   Card,
   CardContent,
@@ -17,7 +20,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/_components/ui/card";
-import axios from "axios";
 
 interface BugForm {
   title: string;
@@ -25,7 +27,11 @@ interface BugForm {
 }
 
 const NewBugPage = () => {
-  const { register, handleSubmit } = useForm<BugForm>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<BugForm>({ resolver: zodResolver(createBugSchema) });
   const [isSubmitting, setSubmitting] = useState(false);
   const router = useRouter();
 
@@ -59,6 +65,9 @@ const NewBugPage = () => {
               placeholder="Enter a brief title for the bug"
               {...register("title")}
             />
+            {errors.title && (
+              <p className="text-sm text-red-500">{errors.title.message}</p>
+            )}
           </div>
           <div className="space-y-1">
             <Label htmlFor="description">Bug Description</Label>
@@ -69,6 +78,11 @@ const NewBugPage = () => {
               className="resize-none"
               rows={4}
             />
+            {errors.description && (
+              <p className="text-sm text-red-500">
+                {errors.description.message}
+              </p>
+            )}
           </div>
         </CardContent>
         <CardFooter>
