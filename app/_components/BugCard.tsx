@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "./ui/button";
 import { Status } from "@prisma/client";
 import BugStatusBadge from "./BugStatusBadge";
 import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/app/_components/ui/avatar";
-import { Button } from "./ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,8 +28,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "./ui/dropdown-menu";
+import Link from "next/link";
 
 interface BugCardProps {
+  id: number;
   title: string;
   description: string;
   assignedTo: string;
@@ -37,6 +39,7 @@ interface BugCardProps {
 }
 
 export default function BugCard({
+  id,
   title,
   description,
   assignedTo,
@@ -62,7 +65,7 @@ export default function BugCard({
       <CardHeader className="mt-2">
         <div className="flex items-center justify-between">
           <CardTitle className="px-3 text-base text-slate-900 sm:text-lg md:text-xl">
-            {title}
+            <Link href={`/bugs/${id}`}>{title}</Link>
           </CardTitle>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
