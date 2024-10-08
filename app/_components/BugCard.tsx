@@ -1,7 +1,21 @@
 "use client";
 
-import { Badge } from "@/app/_components/ui/badge";
+import { useState } from "react";
+import { Status } from "@prisma/client";
+import BugStatusBadge from "./BugStatusBadge";
+import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/app/_components/ui/avatar";
+import { Button } from "./ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 import {
   Card,
   CardContent,
@@ -14,49 +28,21 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "./ui/dropdown-menu";
-import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
-import { Button } from "./ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
-import { useState } from "react";
 
 interface BugCardProps {
   title: string;
   description: string;
   assignedTo: string;
-  status: "open" | "in-progress" | "resolved";
+  status: Status;
 }
 
-export default function BugCard(
-  { title, description, assignedTo, status }: BugCardProps = {
-    title: "Login Page Error",
-    description: "Users are unable to log in using their Google accounts.",
-    assignedTo: "John Doe",
-    status: "open",
-  },
-) {
+export default function BugCard({
+  title,
+  description,
+  assignedTo,
+  status,
+}: BugCardProps) {
   const [open, setOpen] = useState(false);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "open":
-        return "bg-red-100 text-red-800";
-      case "in-progress":
-        return "bg-yellow-100 text-yellow-800";
-      case "resolved":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   const getInitials = (name: string) => {
     return name
@@ -124,9 +110,7 @@ export default function BugCard(
               {assignedTo}
             </span>
           </div>
-          <Badge className={`${getStatusColor(status)} capitalize`}>
-            {status.replace("-", " ")}
-          </Badge>
+          <BugStatusBadge status={status} />
         </div>
       </CardContent>
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { db } from "../_lib/prisma";
+import { Status } from "@prisma/client";
 import BugCard from "../_components/BugCard";
 
 const BugsPage = async () => {
@@ -13,7 +14,7 @@ const BugsPage = async () => {
             title={bug.title}
             description={bug.description}
             assignedTo="Jose"
-            status="in-progress"
+            status={bug.status as Status}
           />
         ))}
       </div>
