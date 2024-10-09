@@ -1,7 +1,7 @@
 import React from "react";
 import { db } from "@/app/_lib/prisma";
 import { notFound } from "next/navigation";
-import BugTicketDetail from "./BugTicketDetail";
+import BugTicketDetail from "../_components/BugTicketDetail";
 
 interface Props {
   params: {
