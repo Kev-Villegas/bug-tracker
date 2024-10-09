@@ -1,6 +1,7 @@
 import React from "react";
 import { db } from "@/app/_lib/prisma";
 import { notFound } from "next/navigation";
+import BugTicketDetail from "./BugTicketDetail";
 
 interface Props {
   params: {
@@ -16,10 +17,17 @@ const BugsDetailsPage = async ({ params }: Props) => {
   });
 
   if (!bug) notFound();
+
   return (
-    <section>
-      <div>{bug.title}</div>
-    </section>
+    <BugTicketDetail
+      description={bug.description}
+      id={bug.id}
+      title={bug.title}
+      status={bug.status}
+      assignedTo="John Doe"
+      createdAt={bug.createdAt}
+      updatedAt={bug.updatedAt}
+    />
   );
 };
 
