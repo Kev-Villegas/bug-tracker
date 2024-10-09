@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Status } from "@prisma/client";
+import { Priority } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
@@ -32,25 +33,30 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/_components/ui/dialog";
+import BugPriorityBadge from "@/app/_components/BugPriorityBadge";
 
 interface BugTicketDetailProps {
   id: number;
   title: string;
+  summary: string;
   description: string;
   assignedTo: string;
   createdAt: Date;
   updatedAt: Date;
   status: Status;
+  priority: Priority;
 }
 
 export default function BugTicketDetail({
   id,
   title,
-  description,
-  assignedTo,
   status,
+  summary,
+  priority,
   createdAt,
   updatedAt,
+  assignedTo,
+  description,
 }: BugTicketDetailProps) {
   const router = useRouter();
   const [editStatus, setEditStatus] = useState(status);
@@ -78,6 +84,7 @@ export default function BugTicketDetail({
               <CardTitle className="mb-2 px-4 text-2xl">
                 Bug Ticket #{id}
               </CardTitle>
+              <p className="px-4 text-sm text-gray-600">{summary}</p>
             </div>
             <div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -177,11 +184,13 @@ export default function BugTicketDetail({
           <CardContent>
             <Separator className="mb-4 w-full border border-neutral-300" />
             <div className="space-y-4">
-              <div>
-                <span className="font-sans font-bold text-gray-900">
-                  Current Status:
-                </span>{" "}
-                <BugStatusBadge status={status} />
+              <div className="flex justify-between">
+                <div>
+                  <BugStatusBadge status={status} />
+                </div>
+                <div>
+                  <BugPriorityBadge priority={priority} />
+                </div>
               </div>
               <div>
                 <h3 className="text-base font-semibold text-slate-950">
