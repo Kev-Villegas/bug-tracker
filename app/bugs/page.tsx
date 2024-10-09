@@ -1,7 +1,7 @@
 import React from "react";
 import { db } from "../_lib/prisma";
 import { Status } from "@prisma/client";
-import BugCard from "../_components/BugCard";
+import BugCard from "./_components/BugCard";
 
 const BugsPage = async () => {
   const bugs = await db.bug.findMany();

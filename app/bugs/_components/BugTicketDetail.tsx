@@ -9,7 +9,7 @@ import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { Separator } from "@/app/_components/ui/separator";
-import BugStatusBadge from "@/app/_components/BugStatusBadge";
+import BugStatusBadge from "@/app/bugs/_components/BugStatusBadge";
 import { Ban, CircleArrowLeft, Pencil, Save } from "lucide-react";
 import {
   Card,
@@ -33,7 +33,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/_components/ui/dialog";
-import BugPriorityBadge from "@/app/_components/BugPriorityBadge";
+import BugPriorityBadge from "@/app/bugs/_components/BugPriorityBadge";
 
 interface BugTicketDetailProps {
   id: number;
