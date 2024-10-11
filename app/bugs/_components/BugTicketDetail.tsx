@@ -198,11 +198,12 @@ export default function BugTicketDetail({
                       <Input id="assignedTo" className="col-span-3" />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="assignedTo" className="text-right">
+                      <Label htmlFor="createdAt" className="text-right">
                         Created At
                       </Label>
                       <Input
-                        id="assignedTo"
+                        id="createdAt"
+                        className="col-span-3"
                         readOnly
                         value={new Date(createdAt).toLocaleString("en-US", {
                           year: "numeric",
@@ -212,15 +213,15 @@ export default function BugTicketDetail({
                           minute: "2-digit",
                           second: "2-digit",
                         })}
-                        className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="assignedTo" className="text-right">
+                      <Label htmlFor="updatedAt" className="text-right">
                         Updated At
                       </Label>
                       <Input
-                        id="assignedTo"
+                        id="updatedAt"
+                        className="col-span-3"
                         readOnly
                         value={new Date(updatedAt).toLocaleString("en-US", {
                           year: "numeric",
@@ -230,7 +231,6 @@ export default function BugTicketDetail({
                           minute: "2-digit",
                           second: "2-digit",
                         })}
-                        className="col-span-3"
                       />
                     </div>
                   </div>
