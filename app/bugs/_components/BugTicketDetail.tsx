@@ -108,6 +108,15 @@ export default function BugTicketDetail({
                       <Input id="title" className="col-span-3" />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="summary" className="text-right">
+                        Summary
+                      </Label>
+                      <Textarea
+                        id="summary"
+                        className="col-span-3 resize-none"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="description" className="text-right">
                         Description
                       </Label>
@@ -115,6 +124,39 @@ export default function BugTicketDetail({
                         id="description"
                         className="col-span-3 resize-none"
                       />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="priority" className="text-right">
+                        Priority
+                      </Label>
+                      <Select
+                        onValueChange={handleStatusChange}
+                        defaultValue={editStatus}
+                      >
+                        <SelectTrigger className="col-span-3 border border-gray-400">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent className="border border-gray-700">
+                          <SelectItem
+                            value="Low"
+                            className="cursor-pointer text-green-600 hover:bg-transparent"
+                          >
+                            Low
+                          </SelectItem>
+                          <SelectItem
+                            value="Medium"
+                            className="cursor-pointer text-yellow-600 hover:bg-transparent"
+                          >
+                            Medium
+                          </SelectItem>
+                          <SelectItem
+                            value="High"
+                            className="cursor-pointer text-red-600 hover:bg-transparent"
+                          >
+                            High
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="status" className="text-right">
@@ -128,11 +170,24 @@ export default function BugTicketDetail({
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent className="border border-gray-700">
-                          <SelectItem value="Open">Open</SelectItem>
-                          <SelectItem value="In Progress">
+                          <SelectItem
+                            value="Open"
+                            className="cursor-pointer bg-transparent text-sky-600"
+                          >
+                            Open
+                          </SelectItem>
+                          <SelectItem
+                            value="In Progress"
+                            className="cursor-pointer bg-transparent text-yellow-600"
+                          >
                             In Progress
                           </SelectItem>
-                          <SelectItem value="Closed">Closed</SelectItem>
+                          <SelectItem
+                            value="Closed"
+                            className="cursor-pointer bg-transparent text-red-600"
+                          >
+                            Closed
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
