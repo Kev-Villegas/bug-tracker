@@ -11,11 +11,11 @@ model Bug {
   id          Int      @id @default(autoincrement())
   title       String   @db.VarChar(255)
   description String   @db.VarChar(1000)
-  summary     String   @default("") @db.VarChar(255)
   status      Status   @default(OPEN)
-  priority    Priority @default(LOW)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  priority    Priority @default(LOW)
+  summary     String   @default("") @db.VarChar(255)
 }
 
 enum Status {

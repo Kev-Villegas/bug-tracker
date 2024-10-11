@@ -1,40 +1,23 @@
 "use client";
-
 import Link from "next/link";
-import { useState } from "react";
+import { ExternalLink } from "lucide-react";
+import BugActionsMenu from "./BugActionsMenu";
 import BugStatusBadge from "./BugStatusBadge";
 import BugPriorityBadge from "./BugPriorityBadge";
 import { Priority, Status } from "@prisma/client";
 import { Button } from "../../_components/ui/button";
 import { Separator } from "@/app/_components/ui/separator";
-import { EllipsisVertical, ExternalLink, Pencil, Trash2 } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../_components/ui/alert-dialog";
+
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/app/_components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "../../_components/ui/dropdown-menu";
 
 interface BugCardProps {
   id: number;
   title: string;
-
   status: Status;
   summary: string;
   priority: Priority;
@@ -49,11 +32,12 @@ export default function BugCard({
   priority,
   assignedTo,
 }: BugCardProps) {
-  const [open, setOpen] = useState(false);
+  const handleEdit = () => {
+    console.log("Editing bug", id);
+  };
 
   const handleDelete = () => {
-    console.log("Bug deleted");
-    setOpen(false);
+    console.log("Bug deleted", id);
   };
 
   return (
@@ -68,39 +52,7 @@ export default function BugCard({
               #{id}
             </span>
           </div>
-          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="rounded-full bg-transparent text-sm text-gray-900 hover:bg-accent"
-                  aria-label="More options"
-                >
-                  <EllipsisVertical size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  className="group cursor-pointer"
-                  onSelect={() => console.log("Edit")}
-                >
-                  <span className="flex group-hover:text-slate-950">
-                    <Pencil size={20} className="mr-1" />
-                    Edit
-                  </span>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  className="group cursor-pointer"
-                  onSelect={() => setOpen(true)}
-                >
-                  <span className="flex group-hover:text-red-600">
-                    <Trash2 size={20} className="mr-1" /> Delete
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <BugActionsMenu onEdit={handleEdit} onDeleteConfirm={handleDelete} />
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -140,28 +92,6 @@ export default function BugCard({
           </Button>
         </div>
       </CardContent>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this bug ticket? This action
-              cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="hover:bg-gray-300">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 hover:bg-red-700"
-              onSelect={handleDelete}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Card>
   );
 }
