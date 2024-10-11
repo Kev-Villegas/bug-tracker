@@ -203,7 +203,15 @@ export default function BugTicketDetail({
                       </Label>
                       <Input
                         id="assignedTo"
-                        value={createdAt.toLocaleDateString()}
+                        readOnly
+                        value={new Date(createdAt).toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
                         className="col-span-3"
                       />
                     </div>
@@ -213,7 +221,15 @@ export default function BugTicketDetail({
                       </Label>
                       <Input
                         id="assignedTo"
-                        value={updatedAt.toLocaleDateString()}
+                        readOnly
+                        value={new Date(updatedAt).toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
                         className="col-span-3"
                       />
                     </div>
