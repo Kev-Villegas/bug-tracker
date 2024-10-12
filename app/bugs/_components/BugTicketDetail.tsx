@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Status } from "@prisma/client";
-import { Priority } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { Status, Priority } from "@prisma/client";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { Separator } from "@/app/_components/ui/separator";
-import BugStatusBadge from "@/app/bugs/_components/BugStatusBadge";
 import { Ban, CircleArrowLeft, Pencil, Save } from "lucide-react";
+import BugStatusBadge from "@/app/bugs/_components/BugStatusBadge";
+import BugPriorityBadge from "@/app/bugs/_components/BugPriorityBadge";
 import {
   Card,
   CardContent,
@@ -33,7 +33,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/_components/ui/dialog";
-import BugPriorityBadge from "@/app/bugs/_components/BugPriorityBadge";
 
 interface BugTicketDetailProps {
   id: number;
@@ -59,11 +58,19 @@ export default function BugTicketDetail({
   description,
 }: BugTicketDetailProps) {
   const router = useRouter();
-  const [editStatus, setEditStatus] = useState(status);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editStatus, setEditStatus] = useState(status);
+  const [editPriority, setEditPriority] = useState(priority);
   const handleStatusChange = (value: string) => setEditStatus(value as Status);
+  const handlePriorityChange = (value: string) =>
+    setEditPriority(value as Priority);
 
   const handleCancel = () => {
+    setDialogOpen(false);
+    router.push(`/bugs/${id}`);
+  };
+
+  const handleSave = () => {
     setDialogOpen(false);
     router.push(`/bugs/${id}`);
   };
@@ -105,7 +112,11 @@ export default function BugTicketDetail({
                       <Label htmlFor="title" className="text-right">
                         Title
                       </Label>
-                      <Input id="title" className="col-span-3" />
+                      <Input
+                        id="title"
+                        defaultValue={title}
+                        className="col-span-3"
+                      />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="summary" className="text-right">
@@ -113,6 +124,7 @@ export default function BugTicketDetail({
                       </Label>
                       <Textarea
                         id="summary"
+                        defaultValue={summary}
                         className="col-span-3 resize-none"
                       />
                     </div>
@@ -122,6 +134,7 @@ export default function BugTicketDetail({
                       </Label>
                       <Textarea
                         id="description"
+                        defaultValue={description}
                         className="col-span-3 resize-none"
                       />
                     </div>
@@ -130,8 +143,8 @@ export default function BugTicketDetail({
                         Priority
                       </Label>
                       <Select
-                        onValueChange={handleStatusChange}
-                        defaultValue={editStatus}
+                        onValueChange={handlePriorityChange}
+                        defaultValue={editPriority}
                       >
                         <SelectTrigger className="col-span-3 border border-gray-400">
                           <SelectValue placeholder="Select priority" />
@@ -171,19 +184,19 @@ export default function BugTicketDetail({
                         </SelectTrigger>
                         <SelectContent className="border border-gray-700">
                           <SelectItem
-                            value="Open"
+                            value="open"
                             className="cursor-pointer bg-transparent text-sky-600"
                           >
                             Open
                           </SelectItem>
                           <SelectItem
-                            value="In Progress"
+                            value="in_progress"
                             className="cursor-pointer bg-transparent text-yellow-600"
                           >
                             In Progress
                           </SelectItem>
                           <SelectItem
-                            value="Closed"
+                            value="closed"
                             className="cursor-pointer bg-transparent text-red-600"
                           >
                             Closed
@@ -195,7 +208,11 @@ export default function BugTicketDetail({
                       <Label htmlFor="assignedTo" className="text-right">
                         Assigned To
                       </Label>
-                      <Input id="assignedTo" className="col-span-3" />
+                      <Input
+                        id="assignedTo"
+                        defaultValue={assignedTo}
+                        className="col-span-3"
+                      />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="createdAt" className="text-right">
@@ -244,7 +261,7 @@ export default function BugTicketDetail({
                       <Ban className="mr-1" size={20} />
                       Cancel
                     </Button>
-                    <Button type="submit">
+                    <Button type="submit" onClick={handleSave}>
                       <Save className="mr-1" size={20} /> Save changes
                     </Button>
                   </DialogFooter>
