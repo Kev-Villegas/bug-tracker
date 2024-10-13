@@ -9,13 +9,13 @@ datasource db {
 
 model Bug {
   id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255)
+  title       String   @db.VarChar(50)
   description String   @db.VarChar(1000)
   status      Status   @default(OPEN)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   priority    Priority @default(LOW)
-  summary     String   @default("") @db.VarChar(255)
+  summary     String   @default("") @db.VarChar(50)
 }
 
 enum Status {
