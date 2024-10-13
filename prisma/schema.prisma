@@ -21,7 +21,7 @@ model Bug {
 enum Status {
   OPEN
   IN_PROGRESS
-  CLOSED
+  RESOLVED
 }
 
 enum Priority {

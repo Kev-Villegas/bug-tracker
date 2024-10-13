@@ -50,12 +50,15 @@ export default function BugCard({
           <CardTitle className="px-3 text-base text-slate-900">
             <Link href={`/bugs/${id}`}>{title}</Link>
           </CardTitle>
-          <div className="flex">
-            <span className="items-center rounded-full bg-neutral-200 px-1 text-base font-medium">
+          <div className="flex items-center justify-between">
+            <span className="rounded-full bg-gray-500 px-[6px] text-sm font-semibold text-white shadow-md transition duration-300 ease-in-out">
               #{id}
             </span>
+            <BugActionsMenu
+              onEdit={handleEdit}
+              onDeleteConfirm={handleDelete}
+            />
           </div>
-          <BugActionsMenu onEdit={handleEdit} onDeleteConfirm={handleDelete} />
         </div>
       </CardHeader>
       <CardContent className="space-y-2">

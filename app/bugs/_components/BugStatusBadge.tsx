@@ -7,7 +7,7 @@ const statusMap: Record<Status, { label: string; className: string }> = {
     label: "In Progress",
     className: "bg-yellow-300 text-yellow-950",
   },
-  CLOSED: { label: "Resolved", className: "bg-green-300 text-green-950" },
+  RESOLVED: { label: "Resolved", className: "bg-green-400 text-green-950" },
 };
 
 const BugStatusBadge = ({ status }: { status: Status }) => {

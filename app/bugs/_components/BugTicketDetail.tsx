@@ -196,10 +196,10 @@ export default function BugTicketDetail({
                             In Progress
                           </SelectItem>
                           <SelectItem
-                            value="closed"
+                            value="RESOLVED"
                             className="cursor-pointer bg-transparent text-red-600"
                           >
-                            Closed
+                            Resolved
                           </SelectItem>
                         </SelectContent>
                       </Select>

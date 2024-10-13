@@ -17,7 +17,10 @@ export async function POST(request: NextRequest) {
   const newBug = await db.bug.create({
     data: {
       title: body.title,
+      summary: body.summary,
       description: body.description,
+      priority: body.priority,
+      status: body.status,
     },
   });
   return NextResponse.json(newBug, { status: 201 });

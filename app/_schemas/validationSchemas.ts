@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const priorityEnum = z.enum(["LOW", "MEDIUM", "HIGH"]);
-const statusEnum = z.enum(["OPEN", "IN_PROGRESS", "CLOSED"]);
+const statusEnum = z.enum(["OPEN", "IN_PROGRESS", "RESOLVED"]);
 
 export const createBugSchema = z.object({
   title: z

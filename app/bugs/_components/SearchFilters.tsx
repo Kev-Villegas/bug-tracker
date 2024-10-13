@@ -116,9 +116,9 @@ const SearchFilters = ({ bugs }: SearchFilterProps) => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
+              <SelectItem value="OPEN">Open</SelectItem>
+              <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+              <SelectItem value="RESOLVED">Resolved</SelectItem>
             </SelectContent>
           </Select>
         </div>
