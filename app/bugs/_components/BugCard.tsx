@@ -22,6 +22,8 @@ interface BugCardProps {
   summary: string;
   priority: Priority;
   assignedTo: string;
+  updatedAt: string;
+  createdAt: string;
 }
 
 export default function BugCard({
@@ -30,6 +32,7 @@ export default function BugCard({
   status,
   summary,
   priority,
+  createdAt,
   assignedTo,
 }: BugCardProps) {
   const handleEdit = () => {
@@ -78,7 +81,7 @@ export default function BugCard({
         </div>
         <div className="flex items-center justify-between px-1 text-sm font-medium text-slate-900">
           <span className="text-sm text-muted-foreground">
-            Created: {new Date().toLocaleDateString()}
+            Created: {new Date(createdAt).toLocaleDateString("en-GB")}
           </span>
           <Button
             size="sm"
