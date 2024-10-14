@@ -1,6 +1,8 @@
 "use client";
 
+import axios from "axios";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Status, Priority } from "@prisma/client";
 import { Label } from "@/app/_components/ui/label";
@@ -58,9 +60,12 @@ export default function BugTicketDetail({
   description,
 }: BugTicketDetailProps) {
   const router = useRouter();
+  const [editTitle, setEditTitle] = useState(title);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editStatus, setEditStatus] = useState(status);
+  const [editSummary, setEditSummary] = useState(summary);
   const [editPriority, setEditPriority] = useState(priority);
+  const [editDescription, setEditDescription] = useState(description);
   const handleStatusChange = (value: string) => setEditStatus(value as Status);
   const handlePriorityChange = (value: string) =>
     setEditPriority(value as Priority);
@@ -70,9 +75,24 @@ export default function BugTicketDetail({
     router.push(`/bugs/${id}`);
   };
 
-  const handleSave = () => {
-    setDialogOpen(false);
-    router.push(`/bugs/${id}`);
+  const handleSave = async () => {
+    const updatedData: Partial<BugTicketDetailProps> = {
+      title: editTitle,
+      summary: editSummary,
+      description: editDescription,
+      status: editStatus,
+      priority: editPriority,
+    };
+    try {
+      await axios.patch(`/api/bugs/${id}`, updatedData);
+      toast.success("Bug Ticket updated successfully");
+      router.push(`/bugs/${id}`);
+    } catch (error) {
+      console.error("Failed to update bug ticket", error);
+      toast.error("Failed to update the bug ticket. Please try again.");
+    } finally {
+      setDialogOpen(false);
+    }
   };
 
   return (
@@ -116,6 +136,7 @@ export default function BugTicketDetail({
                         id="title"
                         defaultValue={title}
                         className="col-span-3"
+                        onChange={(e) => setEditTitle(e.target.value)}
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -126,6 +147,7 @@ export default function BugTicketDetail({
                         id="summary"
                         defaultValue={summary}
                         className="col-span-3 resize-none"
+                        onChange={(e) => setEditSummary(e.target.value)}
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -136,6 +158,7 @@ export default function BugTicketDetail({
                         id="description"
                         defaultValue={description}
                         className="col-span-3 resize-none"
+                        onChange={(e) => setEditDescription(e.target.value)}
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -144,26 +167,26 @@ export default function BugTicketDetail({
                       </Label>
                       <Select
                         onValueChange={handlePriorityChange}
-                        defaultValue={editPriority}
+                        value={editPriority}
                       >
                         <SelectTrigger className="col-span-3 border border-gray-400">
                           <SelectValue placeholder="Select priority" />
                         </SelectTrigger>
                         <SelectContent className="border border-gray-700">
                           <SelectItem
-                            value="Low"
+                            value="LOW"
                             className="cursor-pointer text-green-600 hover:bg-transparent"
                           >
                             Low
                           </SelectItem>
                           <SelectItem
-                            value="Medium"
+                            value="MEDIUM"
                             className="cursor-pointer text-yellow-600 hover:bg-transparent"
                           >
                             Medium
                           </SelectItem>
                           <SelectItem
-                            value="High"
+                            value="HIGH"
                             className="cursor-pointer text-red-600 hover:bg-transparent"
                           >
                             High
@@ -177,20 +200,20 @@ export default function BugTicketDetail({
                       </Label>
                       <Select
                         onValueChange={handleStatusChange}
-                        defaultValue={editStatus}
+                        value={editStatus}
                       >
                         <SelectTrigger className="col-span-3 border border-gray-400">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent className="border border-gray-700">
                           <SelectItem
-                            value="open"
+                            value="OPEN"
                             className="cursor-pointer bg-transparent text-sky-600"
                           >
                             Open
                           </SelectItem>
                           <SelectItem
-                            value="in_progress"
+                            value="IN_PROGRESS"
                             className="cursor-pointer bg-transparent text-yellow-600"
                           >
                             In Progress
@@ -204,16 +227,7 @@ export default function BugTicketDetail({
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="assignedTo" className="text-right">
-                        Assigned To
-                      </Label>
-                      <Input
-                        id="assignedTo"
-                        defaultValue={assignedTo}
-                        className="col-span-3"
-                      />
-                    </div>
+
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="createdAt" className="text-right">
                         Created At
