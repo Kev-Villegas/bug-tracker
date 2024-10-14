@@ -32,3 +32,20 @@ export async function PATCH(
   });
   return NextResponse.json(updatedBug);
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  const bug = await db.bug.findUnique({
+    where: { id: parseInt(params.id) },
+  });
+  if (!bug)
+    return NextResponse.json(
+      { message: "Bug Ticket not found" },
+      { status: 404 },
+    );
+
+  await db.bug.delete({ where: { id: bug.id } });
+  return NextResponse.json({});
+}

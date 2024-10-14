@@ -1,5 +1,9 @@
 "use client";
+
+import axios from "axios";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import BugActionsMenu from "./BugActionsMenu";
 import BugStatusBadge from "./BugStatusBadge";
@@ -7,7 +11,6 @@ import BugPriorityBadge from "./BugPriorityBadge";
 import { Priority, Status } from "@prisma/client";
 import { Button } from "../../_components/ui/button";
 import { Separator } from "@/app/_components/ui/separator";
-
 import {
   Card,
   CardContent,
@@ -38,9 +41,17 @@ export default function BugCard({
   const handleEdit = () => {
     console.log("Editing bug", id);
   };
-
+  const router = useRouter();
   const handleDelete = () => {
-    console.log("Bug deleted", id);
+    try {
+      axios.delete(`/api/bugs/${id}`);
+      toast.success("Bug deleted successfully");
+      router.refresh();
+      location.reload();
+    } catch (error) {
+      console.error("Error deleting bug", error);
+      toast.error("Failed to delete the bug. Please try again.");
+    }
   };
 
   return (
