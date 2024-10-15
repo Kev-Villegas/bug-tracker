@@ -1,16 +1,13 @@
 "use client";
 
 import axios from "axios";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import EditBugDialog from "./EditBugDialog";
+import { CircleArrowLeft } from "lucide-react";
 import { Status, Priority } from "@prisma/client";
-import { Label } from "@/app/_components/ui/label";
-import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
-import { Textarea } from "@/app/_components/ui/textarea";
 import { Separator } from "@/app/_components/ui/separator";
-import { Ban, CircleArrowLeft, Pencil, Save } from "lucide-react";
 import BugStatusBadge from "@/app/bugs/_components/BugStatusBadge";
 import BugPriorityBadge from "@/app/bugs/_components/BugPriorityBadge";
 import {
@@ -19,22 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/_components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/_components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/app/_components/ui/dialog";
 
 interface BugTicketDetailProps {
   id: number;
@@ -48,7 +29,7 @@ interface BugTicketDetailProps {
   priority: Priority;
 }
 
-export default function BugTicketDetail({
+const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
   id,
   title,
   status,
@@ -58,40 +39,24 @@ export default function BugTicketDetail({
   updatedAt,
   assignedTo,
   description,
-}: BugTicketDetailProps) {
+}) => {
   const router = useRouter();
-  const [editTitle, setEditTitle] = useState(title);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editStatus, setEditStatus] = useState(status);
-  const [editSummary, setEditSummary] = useState(summary);
-  const [editPriority, setEditPriority] = useState(priority);
-  const [editDescription, setEditDescription] = useState(description);
-  const handleStatusChange = (value: string) => setEditStatus(value as Status);
-  const handlePriorityChange = (value: string) =>
-    setEditPriority(value as Priority);
 
-  const handleCancel = () => {
-    setDialogOpen(false);
-    router.push(`/bugs/${id}`);
-  };
-
-  const handleSave = async () => {
-    const updatedData: Partial<BugTicketDetailProps> = {
-      title: editTitle,
-      summary: editSummary,
-      description: editDescription,
-      status: editStatus,
-      priority: editPriority,
-    };
+  const handleSave = async (updatedData: {
+    title: string;
+    summary: string;
+    description: string;
+    status: Status;
+    priority: Priority;
+  }) => {
     try {
       await axios.patch(`/api/bugs/${id}`, updatedData);
       toast.success("Bug Ticket updated successfully");
       router.push(`/bugs/${id}`);
+      router.refresh();
     } catch (error) {
       console.error("Failed to update bug ticket", error);
       toast.error("Failed to update the bug ticket. Please try again.");
-    } finally {
-      setDialogOpen(false);
     }
   };
 
@@ -113,192 +78,37 @@ export default function BugTicketDetail({
               </CardTitle>
               <p className="px-4 text-sm text-gray-600">{summary}</p>
             </div>
-            <div>
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="mr-3">
-                    <Pencil className="mr-1" size={18} /> Edit Ticket
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Edit Bug Ticket</DialogTitle>
-                    <DialogDescription>
-                      Make changes to the bug ticket here.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="title" className="text-right">
-                        Title
-                      </Label>
-                      <Input
-                        id="title"
-                        defaultValue={title}
-                        className="col-span-3"
-                        onChange={(e) => setEditTitle(e.target.value)}
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="summary" className="text-right">
-                        Summary
-                      </Label>
-                      <Textarea
-                        id="summary"
-                        defaultValue={summary}
-                        className="col-span-3 resize-none"
-                        onChange={(e) => setEditSummary(e.target.value)}
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="description" className="text-right">
-                        Description
-                      </Label>
-                      <Textarea
-                        id="description"
-                        defaultValue={description}
-                        className="col-span-3 resize-none"
-                        onChange={(e) => setEditDescription(e.target.value)}
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="priority" className="text-right">
-                        Priority
-                      </Label>
-                      <Select
-                        onValueChange={handlePriorityChange}
-                        value={editPriority}
-                      >
-                        <SelectTrigger className="col-span-3 border border-gray-400">
-                          <SelectValue placeholder="Select priority" />
-                        </SelectTrigger>
-                        <SelectContent className="border border-gray-700">
-                          <SelectItem
-                            value="LOW"
-                            className="cursor-pointer text-green-600 hover:bg-transparent"
-                          >
-                            Low
-                          </SelectItem>
-                          <SelectItem
-                            value="MEDIUM"
-                            className="cursor-pointer text-yellow-600 hover:bg-transparent"
-                          >
-                            Medium
-                          </SelectItem>
-                          <SelectItem
-                            value="HIGH"
-                            className="cursor-pointer text-red-600 hover:bg-transparent"
-                          >
-                            High
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="status" className="text-right">
-                        Status
-                      </Label>
-                      <Select
-                        onValueChange={handleStatusChange}
-                        value={editStatus}
-                      >
-                        <SelectTrigger className="col-span-3 border border-gray-400">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent className="border border-gray-700">
-                          <SelectItem
-                            value="OPEN"
-                            className="cursor-pointer bg-transparent text-sky-600"
-                          >
-                            Open
-                          </SelectItem>
-                          <SelectItem
-                            value="IN_PROGRESS"
-                            className="cursor-pointer bg-transparent text-yellow-600"
-                          >
-                            In Progress
-                          </SelectItem>
-                          <SelectItem
-                            value="RESOLVED"
-                            className="cursor-pointer bg-transparent text-red-600"
-                          >
-                            Resolved
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="createdAt" className="text-right">
-                        Created At
-                      </Label>
-                      <Input
-                        id="createdAt"
-                        className="col-span-3"
-                        readOnly
-                        value={new Date(createdAt).toLocaleString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })}
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="updatedAt" className="text-right">
-                        Updated At
-                      </Label>
-                      <Input
-                        id="updatedAt"
-                        className="col-span-3"
-                        readOnly
-                        value={new Date(updatedAt).toLocaleString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })}
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter className="flex justify-between">
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      className="flex items-center"
-                      onClick={handleCancel}
-                    >
-                      <Ban className="mr-1" size={20} />
-                      Cancel
-                    </Button>
-                    <Button type="submit" onClick={handleSave}>
-                      <Save className="mr-1" size={20} /> Save changes
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
+            <EditBugDialog
+              title={title}
+              summary={summary}
+              description={description}
+              status={status}
+              priority={priority}
+              createdAt={createdAt}
+              updatedAt={updatedAt}
+              onSave={handleSave}
+            />
           </div>
           <CardContent>
             <Separator className="mb-4 w-full border border-neutral-300" />
             <div className="space-y-4">
               <div className="flex justify-between">
-                <div>
-                  <BugStatusBadge status={status} />
-                </div>
-                <div>
-                  <BugPriorityBadge priority={priority} />
-                </div>
+                <BugStatusBadge status={status} />
+                <BugPriorityBadge priority={priority} />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-slate-950">
                   Title
                 </h3>
                 <p className="text-sm font-medium text-neutral-600">{title}</p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-slate-950">
+                  Assigned to
+                </h3>
+                <p className="text-sm font-medium text-neutral-600">
+                  {assignedTo}
+                </p>
               </div>
               <div>
                 <h3 className="text-base font-semibold text-slate-950">
@@ -310,26 +120,10 @@ export default function BugTicketDetail({
               </div>
               <div>
                 <h3 className="text-base font-semibold text-slate-950">
-                  Assigned To
+                  Summary
                 </h3>
                 <p className="text-sm font-medium text-neutral-600">
-                  {assignedTo}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-slate-950">
-                  Created
-                </h3>
-                <p className="text-sm font-medium text-neutral-600">
-                  {createdAt.toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-slate-950">
-                  Last Updated
-                </h3>
-                <p className="text-sm font-medium text-neutral-600">
-                  {updatedAt.toLocaleDateString()}
+                  {summary}
                 </p>
               </div>
             </div>
@@ -338,4 +132,6 @@ export default function BugTicketDetail({
       </Card>
     </div>
   );
-}
+};
+
+export default BugTicketDetail;
