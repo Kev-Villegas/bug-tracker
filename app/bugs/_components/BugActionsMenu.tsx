@@ -1,19 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import DeleteBugDialog from "./DeleteBugDialog";
 import { Button } from "../../_components/ui/button";
-import { EllipsisVertical } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../_components/ui/alert-dialog";
+import { Pencil, Trash2, EllipsisVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -26,15 +16,15 @@ interface BugActionsMenuProps {
   onDeleteConfirm: () => void;
 }
 
-export default function BugActionsMenu({
+const BugActionsMenu: React.FC<BugActionsMenuProps> = ({
   onEdit,
   onDeleteConfirm,
-}: BugActionsMenuProps) {
-  const [open, setOpen] = useState(false);
+}) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDelete = () => {
     onDeleteConfirm();
-    setOpen(false);
+    setIsDialogOpen(false);
   };
 
   return (
@@ -59,7 +49,7 @@ export default function BugActionsMenu({
 
           <DropdownMenuItem
             className="group cursor-pointer"
-            onSelect={() => setOpen(true)}
+            onSelect={() => setIsDialogOpen(true)}
           >
             <span className="flex group-hover:text-red-600">
               <Trash2 size={20} className="mr-1" /> Delete
@@ -67,28 +57,17 @@ export default function BugActionsMenu({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this bug ticket? This action
-              cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="hover:bg-gray-300">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-700 hover:bg-red-700"
-              onClick={handleDelete}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteBugDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        title="Confirm Deletion"
+        description="Are you sure you want to delete this bug ticket? This action cannot be undone."
+        onConfirm={handleDelete}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+      />
     </>
   );
-}
+};
+
+export default BugActionsMenu;
