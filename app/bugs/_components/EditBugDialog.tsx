@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Ban, Save } from "lucide-react";
+import { Ban, Pencil, Save } from "lucide-react";
 import { Status, Priority } from "@prisma/client";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
@@ -75,8 +75,8 @@ const EditBugDialog: React.FC<EditBugDialogProps> = ({
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="mr-3" onClick={() => setIsDialogOpen(true)}>
-          Edit Ticket
+        <Button className="mr-2" onClick={() => setIsDialogOpen(true)}>
+          <Pencil className="mr-1" size={16} /> Edit Ticket
         </Button>
       </DialogTrigger>
       <DialogContent>

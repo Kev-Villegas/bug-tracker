@@ -1,12 +1,14 @@
 "use client";
 
 import axios from "axios";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import EditBugDialog from "./EditBugDialog";
-import { CircleArrowLeft } from "lucide-react";
+import DeleteBugDialog from "./DeleteBugDialog";
 import { Status, Priority } from "@prisma/client";
 import { Button } from "@/app/_components/ui/button";
+import { CircleArrowLeft, Trash2 } from "lucide-react";
 import { Separator } from "@/app/_components/ui/separator";
 import BugStatusBadge from "@/app/bugs/_components/BugStatusBadge";
 import BugPriorityBadge from "@/app/bugs/_components/BugPriorityBadge";
@@ -41,6 +43,7 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
   description,
 }) => {
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleSave = async (updatedData: {
     title: string;
@@ -57,6 +60,20 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
     } catch (error) {
       console.error("Failed to update bug ticket", error);
       toast.error("Failed to update the bug ticket. Please try again.");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/bugs/${id}`);
+      toast.success("Bug Ticket deleted successfully");
+      router.push("/bugs");
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to delete bug ticket", error);
+      toast.error("Failed to delete the bug ticket. Please try again.");
+    } finally {
+      setIsDialogOpen(false);
     }
   };
 
@@ -78,16 +95,27 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
               </CardTitle>
               <p className="px-4 text-sm text-gray-600">{summary}</p>
             </div>
-            <EditBugDialog
-              title={title}
-              summary={summary}
-              description={description}
-              status={status}
-              priority={priority}
-              createdAt={createdAt}
-              updatedAt={updatedAt}
-              onSave={handleSave}
-            />
+            <div className="flex flex-col items-start">
+              <EditBugDialog
+                title={title}
+                summary={summary}
+                description={description}
+                status={status}
+                priority={priority}
+                createdAt={createdAt}
+                updatedAt={updatedAt}
+                onSave={handleSave}
+              />
+              <Button
+                size="sm"
+                variant="destructive"
+                className="ml-[1px] mt-1"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <Trash2 className="mr-1" size={16} />
+                Delete Ticket
+              </Button>
+            </div>
           </div>
           <CardContent>
             <Separator className="mb-4 w-full border border-neutral-300" />
@@ -130,6 +158,15 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
           </CardContent>
         </CardHeader>
       </Card>
+      <DeleteBugDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        title="Confirm Deletion"
+        description="Are you sure you want to delete this bug ticket? This action cannot be undone"
+        onConfirm={handleDelete}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+      />
     </div>
   );
 };
