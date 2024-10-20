@@ -1,12 +1,15 @@
+/* eslint-disable */
 "use client";
 
 import React from "react";
 import Link from "next/link";
 import { ShieldHalf } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 const Header = () => {
   const currentPath = usePathname();
+  const { status, data: session } = useSession();
   const links = [
     { id: 1, label: "Home", href: "/" },
     { id: 2, label: "Bugs", href: "/bugs" },
@@ -29,6 +32,14 @@ const Header = () => {
           </li>
         ))}
       </ul>
+      <div>
+        {status === "authenticated" && (
+          <Link href="/api/auth/signout">Log Out</Link>
+        )}
+        {status === "unauthenticated" && (
+          <Link href="/api/auth/signin">Log In</Link>
+        )}
+      </div>
     </nav>
   );
 };
