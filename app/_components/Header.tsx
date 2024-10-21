@@ -53,7 +53,10 @@ const Header = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="cursor-pointer">
-                <AvatarImage src={session.user!.image!} />
+                <AvatarImage
+                  src={session.user!.image!}
+                  referrerPolicy="no-referrer"
+                />
                 <AvatarFallback>{session.user!.name![0]}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
