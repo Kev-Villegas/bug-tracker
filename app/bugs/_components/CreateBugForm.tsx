@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/_components/ui/select";
+import AsigneeSelect from "./AsigneeSelect";
 
 interface BugForm {
   title: string;
@@ -121,6 +122,13 @@ const CreateBugForm = () => {
                 {errors.description.message}
               </p>
             )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-1">
+            <Label htmlFor="priority" className="text-start">
+              Assigned To:
+            </Label>
+            <br />
+            <AsigneeSelect />
           </div>
           <div className="grid grid-cols-4 items-center gap-1">
             <Label htmlFor="priority" className="text-start">
