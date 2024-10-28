@@ -1,4 +1,6 @@
 import { db } from "@/app/_lib/prisma";
+import { getServerSession } from "next-auth";
+import authOptions from "@/app/auth/authOptions";
 import { NextRequest, NextResponse } from "next/server";
 import { createBugSchema } from "@/app/_schemas/validationSchemas";
 
@@ -6,6 +8,9 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   const body = await request.json();
   const validation = createBugSchema.safeParse(body);
   if (!validation.success)
@@ -37,6 +42,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
+  const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   const bug = await db.bug.findUnique({
     where: { id: parseInt(params.id) },
   });
