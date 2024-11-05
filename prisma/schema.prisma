@@ -8,14 +8,16 @@ datasource db {
 }
 
 model Bug {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(50)
-  description String   @db.VarChar(1000)
-  status      Status   @default(OPEN)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  priority    Priority @default(LOW)
-  summary     String   @default("") @db.VarChar(50)
+  id               Int      @id @default(autoincrement())
+  title            String   @db.VarChar(50)
+  description      String   @db.VarChar(1000)
+  status           Status   @default(OPEN)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  priority         Priority @default(LOW)
+  summary          String   @default("") @db.VarChar(50)
+  assignedToUserId String?  @db.VarChar(255)
+  assignedToUser   User?    @relation(fields: [assignedToUserId], references: [id])
 }
 
 enum Status {
@@ -31,35 +33,35 @@ enum Priority {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
- 
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
- 
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique @map("session_token")
   userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@map("sessions")
 }
- 
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -68,15 +70,16 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
- 
+  assignedBug   Bug[]
+
   @@map("users")
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
