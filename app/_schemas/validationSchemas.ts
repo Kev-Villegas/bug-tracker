@@ -19,3 +19,27 @@ export const createBugSchema = z.object({
   status: statusEnum.default("OPEN"),
   priority: priorityEnum.default("LOW"),
 });
+
+export const patchBugSchema = z.object({
+  title: z
+    .string()
+    .min(4, "Title must be at least 4 character.")
+    .max(50, "Title must be at most 50 characters.")
+    .optional(),
+  summary: z
+    .string()
+    .min(4, "Summary must be at least 4 character.")
+    .max(50, "Summary must be at most 50 characters.")
+    .optional(),
+  description: z
+    .string()
+    .min(4, "Description must be at least 4 character.")
+    .max(1000, "Description must be at most 1000 characters.")
+    .optional(),
+  assignedToUserId: z
+    .string()
+    .min(1, "Assigned to must be at least 1 character.")
+    .max(255, "Assigned to must be at most 255 characters.")
+    .optional()
+    .nullable(),
+});
