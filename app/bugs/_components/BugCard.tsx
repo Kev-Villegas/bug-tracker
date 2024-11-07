@@ -3,12 +3,12 @@
 import axios from "axios";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { Bug } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import BugActionsMenu from "./BugActionsMenu";
 import BugStatusBadge from "./BugStatusBadge";
 import BugPriorityBadge from "./BugPriorityBadge";
-import { Priority, Status } from "@prisma/client";
 import { Button } from "../../_components/ui/button";
 import { Separator } from "@/app/_components/ui/separator";
 import {
@@ -19,32 +19,22 @@ import {
 } from "@/app/_components/ui/card";
 
 interface BugCardProps {
-  id: number;
-  title: string;
-  status: Status;
-  summary: string;
-  priority: Priority;
-  assignedTo: string;
-  updatedAt: string;
-  createdAt: string;
+  bug: Bug;
 }
 
-export default function BugCard({
-  id,
-  title,
-  status,
-  summary,
-  priority,
-  createdAt,
-  assignedTo,
-}: BugCardProps) {
+export default function BugCard({ bug }: BugCardProps) {
+  const { id, title, status, summary, priority, createdAt, assignedToUserId } =
+    bug;
+
+  const router = useRouter();
+
   const handleEdit = () => {
     console.log("Editing bug", id);
   };
-  const router = useRouter();
-  const handleDelete = () => {
+
+  const handleDelete = async () => {
     try {
-      axios.delete(`/api/bugs/${id}`);
+      await axios.delete(`/api/bugs/${id}`);
       toast.success("Bug deleted successfully");
       router.refresh();
       location.reload();
@@ -79,15 +69,15 @@ export default function BugCard({
         <div className="flex justify-between px-1 text-sm font-medium text-slate-900">
           <span>Assigned To</span>
           <span className="text-sm font-medium text-slate-900">
-            {assignedTo}
+            {assignedToUserId}
           </span>
         </div>
         <div className="flex justify-between px-1 text-sm font-medium text-slate-900">
-          <span> Priority</span>
+          <span>Priority</span>
           <BugPriorityBadge priority={priority} />
         </div>
         <div className="flex justify-between px-1 text-sm font-medium text-slate-900">
-          <span> Status</span>
+          <span>Status</span>
           <BugStatusBadge status={status} />
         </div>
         <div className="mb-4 mt-4">

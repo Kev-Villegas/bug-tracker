@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import BugCard from "./BugCard";
+import { Bug } from "@prisma/client";
 import { Search } from "lucide-react";
 import { useState, useCallback } from "react";
-import { Status, Priority } from "@prisma/client";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
@@ -17,15 +17,7 @@ import {
 } from "@/app/_components/ui/select";
 
 interface SearchFilterProps {
-  bugs: {
-    id: number;
-    title: string;
-    summary: string;
-    status: Status;
-    priority: Priority;
-    createdAt: string;
-    updatedAt: string;
-  }[];
+  bugs: Bug[];
 }
 
 const SearchFilters = ({ bugs }: SearchFilterProps) => {
@@ -145,19 +137,7 @@ const SearchFilters = ({ bugs }: SearchFilterProps) => {
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {filteredBugs.length > 0 ? (
-          filteredBugs.map((bug) => (
-            <BugCard
-              id={bug.id}
-              key={bug.id}
-              assignedTo="John Doe"
-              title={bug.title}
-              summary={bug.summary}
-              status={bug.status as Status}
-              priority={bug.priority as Priority}
-              createdAt={bug.createdAt as string}
-              updatedAt={bug.updatedAt as string}
-            />
-          ))
+          filteredBugs.map((bug) => <BugCard key={bug.id} bug={bug} />)
         ) : (
           <h3 className="text-xl font-semibold">No results found</h3>
         )}
