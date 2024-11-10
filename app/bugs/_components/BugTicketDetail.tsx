@@ -6,8 +6,8 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import EditBugDialog from "./EditBugDialog";
 import DeleteBugDialog from "./DeleteBugDialog";
-import { Status, Priority } from "@prisma/client";
 import { Button } from "@/app/_components/ui/button";
+import { Status, Priority, Bug } from "@prisma/client";
 import { CircleArrowLeft, Trash2 } from "lucide-react";
 import { Separator } from "@/app/_components/ui/separator";
 import BugStatusBadge from "@/app/bugs/_components/BugStatusBadge";
@@ -20,28 +20,21 @@ import {
 } from "@/app/_components/ui/card";
 
 interface BugTicketDetailProps {
-  id: number;
-  title: string;
-  summary: string;
-  description: string;
-  assignedTo: string;
-  createdAt: Date;
-  updatedAt: Date;
-  status: Status;
-  priority: Priority;
+  bug: Bug;
 }
 
-const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
-  id,
-  title,
-  status,
-  summary,
-  priority,
-  createdAt,
-  updatedAt,
-  assignedTo,
-  description,
-}) => {
+const BugTicketDetail: React.FC<BugTicketDetailProps> = ({ bug }) => {
+  const {
+    id,
+    title,
+    status,
+    summary,
+    priority,
+    description,
+    createdAt,
+    updatedAt,
+    assignedToUserId,
+  } = bug;
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -96,16 +89,7 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
               <p className="px-4 text-sm text-gray-600">{summary}</p>
             </div>
             <div className="flex flex-col items-start">
-              <EditBugDialog
-                title={title}
-                summary={summary}
-                description={description}
-                status={status}
-                priority={priority}
-                createdAt={createdAt}
-                updatedAt={updatedAt}
-                onSave={handleSave}
-              />
+              <EditBugDialog bug={bug} onSave={handleSave} />
               <Button
                 size="sm"
                 variant="destructive"
@@ -135,7 +119,7 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
                   Assigned to
                 </h3>
                 <p className="text-sm font-medium text-neutral-600">
-                  {assignedTo}
+                  {assignedToUserId}
                 </p>
               </div>
               <div>
@@ -152,6 +136,38 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({
                 </h3>
                 <p className="text-sm font-medium text-neutral-600">
                   {summary}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-slate-950">
+                  Last Updated At:
+                </h3>
+                <p className="text-sm font-medium text-neutral-600">
+                  {updatedAt.toLocaleString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-slate-950">
+                  Ticket Created At:
+                </h3>
+                <p className="text-sm font-medium text-neutral-600">
+                  {createdAt.toLocaleString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: true,
+                  })}
                 </p>
               </div>
             </div>

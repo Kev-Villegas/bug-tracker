@@ -2,11 +2,12 @@
 "use client";
 
 import { useState } from "react";
+import AsigneeSelect from "./AsigneeSelect";
 import { Ban, Pencil, Save } from "lucide-react";
-import { Status, Priority } from "@prisma/client";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
+import { Status, Priority, Bug } from "@prisma/client";
 import { Textarea } from "@/app/_components/ui/textarea";
 import {
   Select,
@@ -26,13 +27,7 @@ import {
 } from "@/app/_components/ui/dialog";
 
 interface EditBugDialogProps {
-  title: string;
-  summary: string;
-  description: string;
-  status: Status;
-  priority: Priority;
-  createdAt: Date;
-  updatedAt: Date;
+  bug: Bug;
   onSave: (updatedData: {
     title: string;
     summary: string;
@@ -42,14 +37,8 @@ interface EditBugDialogProps {
   }) => void;
 }
 
-const EditBugDialog: React.FC<EditBugDialogProps> = ({
-  title,
-  summary,
-  description,
-  status,
-  priority,
-  onSave,
-}) => {
+const EditBugDialog: React.FC<EditBugDialogProps> = ({ bug, onSave }) => {
+  const { title, summary, description, status, priority } = bug;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
   const [editStatus, setEditStatus] = useState(status);
@@ -119,6 +108,14 @@ const EditBugDialog: React.FC<EditBugDialogProps> = ({
               className="col-span-3 resize-none"
               onChange={(e) => setEditDescription(e.target.value)}
             />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="assignedTo" className="text-right">
+              Assigned To:
+            </Label>
+            <div className="col-span-3">
+              <AsigneeSelect bug={bug} />
+            </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="priority" className="text-right">

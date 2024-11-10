@@ -21,23 +21,7 @@ const BugsDetailsPage = async ({ params }: Props) => {
 
   if (!bug) notFound();
 
-  return (
-    <div>
-      {session && (
-        <BugTicketDetail
-          id={bug.id}
-          title={bug.title}
-          status={bug.status}
-          summary={bug.summary}
-          assignedTo="John Doe"
-          priority={bug.priority}
-          createdAt={bug.createdAt}
-          updatedAt={bug.updatedAt}
-          description={bug.description}
-        />
-      )}
-    </div>
-  );
+  return <div>{session && <BugTicketDetail bug={bug} />}</div>;
 };
 
 export default BugsDetailsPage;

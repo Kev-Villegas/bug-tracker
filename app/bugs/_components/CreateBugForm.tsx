@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Spinner from "@/app/_components/Spinner";
-import { Priority, Status } from "@prisma/client";
+import { Priority, Status, Bug } from "@prisma/client";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
@@ -38,7 +38,7 @@ interface BugForm {
   priority: Priority;
 }
 
-const CreateBugForm = () => {
+const CreateBugForm = ({ bug }: { bug: Bug }) => {
   const {
     register,
     handleSubmit,
@@ -124,11 +124,11 @@ const CreateBugForm = () => {
             )}
           </div>
           <div className="grid grid-cols-4 items-center gap-1">
-            <Label htmlFor="priority" className="text-start">
+            <Label htmlFor="assignedTo" className="text-start">
               Assigned To:
             </Label>
             <br />
-            <AsigneeSelect />
+            <AsigneeSelect bug={bug} />
           </div>
           <div className="grid grid-cols-4 items-center gap-1">
             <Label htmlFor="priority" className="text-start">

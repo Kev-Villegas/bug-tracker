@@ -1,8 +1,9 @@
+/* eslint-disable  */
 "use client";
 
 import React from "react";
 import axios from "axios";
-import { User } from "@prisma/client";
+import { Bug, User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import {
   Select,
@@ -12,7 +13,11 @@ import {
   SelectValue,
 } from "@/app/_components/ui/select";
 
-const AsigneeSelect = () => {
+interface AsigneeSelectProps {
+  bug?: Bug;
+}
+
+const AsigneeSelect = ({ bug }: AsigneeSelectProps) => {
   const {
     data: users,
     error,
@@ -29,11 +34,24 @@ const AsigneeSelect = () => {
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <Select>
+    <Select
+      defaultValue={bug?.assignedToUserId || "Unassigned"}
+      onValueChange={(userId) => {
+        axios.patch("/api/bugs/" + bug?.id, {
+          assignedToUserId: userId || null,
+        });
+      }}
+    >
       <SelectTrigger className="col-span-3 border border-gray-400">
-        <SelectValue placeholder="Select priority" />
+        <SelectValue placeholder="Assign a User" />
       </SelectTrigger>
-      <SelectContent className="border border-gray-700">
+      <SelectContent className="flex items-center justify-center border border-gray-700">
+        <SelectItem
+          value="Unassigned"
+          className="cursor-pointer hover:bg-transparent"
+        >
+          Unassigned
+        </SelectItem>
         {users?.map((user) => (
           <SelectItem
             key={user.id}
