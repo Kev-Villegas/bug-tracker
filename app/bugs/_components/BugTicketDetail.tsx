@@ -6,12 +6,18 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import EditBugDialog from "./EditBugDialog";
 import DeleteBugDialog from "./DeleteBugDialog";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/app/_components/ui/button";
-import { Status, Priority, Bug } from "@prisma/client";
 import { CircleArrowLeft, Trash2 } from "lucide-react";
 import { Separator } from "@/app/_components/ui/separator";
+import { Status, Priority, Bug, User } from "@prisma/client";
 import BugStatusBadge from "@/app/bugs/_components/BugStatusBadge";
 import BugPriorityBadge from "@/app/bugs/_components/BugPriorityBadge";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/app/_components/ui/avatar";
 import {
   Card,
   CardContent,
@@ -35,8 +41,16 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({ bug }) => {
     updatedAt,
     assignedToUserId,
   } = bug;
+
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const { data: users } = useQuery<User[]>({
+    queryKey: ["users"],
+    queryFn: () => axios.get<User[]>("/api/users").then((res) => res.data),
+  });
+
+  const assignedUser = users?.find((user) => user.id === assignedToUserId);
 
   const handleSave = async (updatedData: {
     title: string;
@@ -103,77 +117,113 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({ bug }) => {
           </div>
           <CardContent>
             <Separator className="mb-4 w-full border border-neutral-300" />
-            <div className="space-y-4">
-              <div className="flex justify-between">
-                <BugStatusBadge status={status} />
-                <BugPriorityBadge priority={priority} />
+            <div className="flex justify-between">
+              <BugStatusBadge status={status} />
+              <BugPriorityBadge priority={priority} />
+            </div>
+            <div className="mt-6 flex items-start justify-between space-x-4">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-base font-semibold text-slate-950">
+                    Title
+                  </h3>
+                  <p className="text-sm font-medium text-neutral-600">
+                    {title}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-base font-semibold text-slate-950">
+                    Description
+                  </h3>
+                  <p className="text-sm font-medium text-neutral-600">
+                    {description}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-base font-semibold text-slate-950">
+                    Summary
+                  </h3>
+                  <p className="text-sm font-medium text-neutral-600">
+                    {summary}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-base font-semibold text-slate-950">
+                    Last Updated At
+                  </h3>
+                  <p className="text-sm font-medium text-neutral-600">
+                    {updatedAt.toLocaleString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-base font-semibold text-slate-950">
+                    Ticket Created At
+                  </h3>
+                  <p className="text-sm font-medium text-neutral-600">
+                    {createdAt.toLocaleString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-base font-semibold text-slate-950">
-                  Title
-                </h3>
-                <p className="text-sm font-medium text-neutral-600">{title}</p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-slate-950">
-                  Assigned to
-                </h3>
-                <p className="text-sm font-medium text-neutral-600">
-                  {assignedToUserId}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-slate-950">
-                  Description
-                </h3>
-                <p className="text-sm font-medium text-neutral-600">
-                  {description}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-slate-950">
-                  Summary
-                </h3>
-                <p className="text-sm font-medium text-neutral-600">
-                  {summary}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-slate-950">
-                  Last Updated At:
-                </h3>
-                <p className="text-sm font-medium text-neutral-600">
-                  {updatedAt.toLocaleString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    hour12: true,
-                  })}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-slate-950">
-                  Ticket Created At:
-                </h3>
-                <p className="text-sm font-medium text-neutral-600">
-                  {createdAt.toLocaleString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    hour12: true,
-                  })}
-                </p>
+              <div className="flex flex-col items-start space-y-4">
+                <div className="items-start">
+                  {/* <h3 className="text-base font-semibold text-slate-950">
+                    Assigned to
+                  </h3> */}
+                  {assignedUser ? (
+                    <div className="flex items-center space-x-2">
+                      <Avatar>
+                        {assignedUser.image ? (
+                          <AvatarImage
+                            src={assignedUser.image}
+                            alt={`${assignedUser.name}'s profile`}
+                          />
+                        ) : (
+                          <AvatarFallback className="bg-gray-300 font-bold text-white">
+                            {assignedUser.name
+                              ? assignedUser.name
+                                  .split(" ")
+                                  .map((name) => name.charAt(0))
+                                  .join("")
+                              : "U"}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <span className="text-sm font-medium text-neutral-600">
+                        {assignedUser.name}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-sm font-medium text-neutral-600">
+                      Unassigned
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
         </CardHeader>
       </Card>
+
       <DeleteBugDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
