@@ -7,8 +7,6 @@ const BugsPage = async () => {
 
   const formattedBugs = bugs.map((bug) => ({
     ...bug,
-    createdAt: bug.createdAt.toISOString(),
-    updatedAt: bug.updatedAt.toISOString(),
   }));
 
   return (
