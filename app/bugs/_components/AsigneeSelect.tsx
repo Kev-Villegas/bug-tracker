@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
-import { Bug, User } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
+import { Bug } from "@prisma/client";
+import useUsers from "@/app/_hooks/useUsers";
 import {
   Select,
   SelectContent,
@@ -15,16 +15,7 @@ interface AsigneeSelectProps {
 }
 
 const AsigneeSelect = ({ bug }: AsigneeSelectProps) => {
-  const {
-    data: users,
-    error,
-    isLoading,
-  } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: () => axios.get<User[]>("/api/users").then((res) => res.data),
-    staleTime: 60 * 1000,
-    retry: 3,
-  });
+  const { data: users, error, isLoading } = useUsers();
 
   if (error) return <p>Error</p>;
 

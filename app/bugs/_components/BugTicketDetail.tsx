@@ -5,12 +5,12 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import EditBugDialog from "./EditBugDialog";
+import useUsers from "@/app/_hooks/useUsers";
 import DeleteBugDialog from "./DeleteBugDialog";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/app/_components/ui/button";
+import { Status, Priority, Bug } from "@prisma/client";
 import { CircleArrowLeft, Trash2 } from "lucide-react";
 import { Separator } from "@/app/_components/ui/separator";
-import { Status, Priority, Bug, User } from "@prisma/client";
 import BugStatusBadge from "@/app/bugs/_components/BugStatusBadge";
 import BugPriorityBadge from "@/app/bugs/_components/BugPriorityBadge";
 import {
@@ -42,13 +42,9 @@ const BugTicketDetail: React.FC<BugTicketDetailProps> = ({ bug }) => {
     assignedToUserId,
   } = bug;
 
+  const { data: users } = useUsers();
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const { data: users } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: () => axios.get<User[]>("/api/users").then((res) => res.data),
-  });
 
   const assignedUser = users?.find((user) => user.id === assignedToUserId);
 

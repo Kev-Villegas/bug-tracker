@@ -3,12 +3,12 @@
 import axios from "axios";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { Bug, User } from "@prisma/client";
+import { Bug } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { ExternalLink } from "lucide-react";
+import useUsers from "@/app/_hooks/useUsers";
 import BugActionsMenu from "./BugActionsMenu";
 import BugStatusBadge from "./BugStatusBadge";
-import { useQuery } from "@tanstack/react-query";
 import BugPriorityBadge from "./BugPriorityBadge";
 import { Button } from "../../_components/ui/button";
 import { Separator } from "@/app/_components/ui/separator";
@@ -33,10 +33,7 @@ export default function BugCard({ bug }: BugCardProps) {
     bug;
 
   const router = useRouter();
-  const { data: users } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: () => axios.get<User[]>("/api/users").then((res) => res.data),
-  });
+  const { data: users } = useUsers();
   const assignedUser = users?.find((user) => user.id === assignedToUserId);
 
   const handleEdit = () => {
