@@ -1,6 +1,3 @@
-/* eslint-disable  */
-"use client";
-
 import React from "react";
 import axios from "axios";
 import { Bug, User } from "@prisma/client";
@@ -33,14 +30,16 @@ const AsigneeSelect = ({ bug }: AsigneeSelectProps) => {
 
   if (isLoading) return <p>Loading...</p>;
 
+  const assigneIssue = (userId: string) => {
+    axios.patch("/api/bugs/" + bug?.id, {
+      assignedToUserId: userId === "Unassigned" ? null : userId,
+    });
+  };
+
   return (
     <Select
       defaultValue={bug?.assignedToUserId || "Unassigned"}
-      onValueChange={(userId) => {
-        axios.patch("/api/bugs/" + bug?.id, {
-          assignedToUserId: userId || null,
-        });
-      }}
+      onValueChange={assigneIssue}
     >
       <SelectTrigger className="col-span-3 border border-gray-400">
         <SelectValue placeholder="Assign a User" />
