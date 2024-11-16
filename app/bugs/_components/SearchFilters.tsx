@@ -3,11 +3,11 @@
 import Link from "next/link";
 import BugCard from "./BugCard";
 import { Bug } from "@prisma/client";
-import { Search } from "lucide-react";
 import { useState, useCallback } from "react";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
+import { CreditCard, RotateCcw, Search, TableOfContents } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,8 +21,10 @@ interface SearchFilterProps {
 }
 
 const SearchFilters = ({ bugs }: SearchFilterProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [view, setView] = useState<"card" | "list">("card");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState<"recent" | "old">("recent");
 
@@ -64,9 +66,14 @@ const SearchFilters = ({ bugs }: SearchFilterProps) => {
 
   const filteredBugs = filterBugs();
 
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    setTimeout(() => setIsLoading(false), 1000);
+  };
+
   return (
     <>
-      <div className="mb-6 grid gap-4 sm:grid-cols-3 md:grid-cols-4">
+      <div className="mb-2 grid gap-4 sm:grid-cols-3 md:grid-cols-4">
         <div>
           <Label htmlFor="search" className="mb-2 block">
             Search Bugs
@@ -128,11 +135,61 @@ const SearchFilters = ({ bugs }: SearchFilterProps) => {
             </SelectContent>
           </Select>
         </div>
-
-        <div className="mt-4 flex items-center">
+      </div>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="mt-4">
           <Button>
             <Link href={"/bugs/new"}>Create New Bug Ticket</Link>
           </Button>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+          <div className="group relative">
+            <Button
+              size="icon"
+              variant={view === "card" ? "solid" : "outline"}
+              onClick={() => setView("card")}
+            >
+              <CreditCard
+                className={view === "card" ? "text-white" : "text-slate-950"}
+              />
+            </Button>
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 scale-0 rounded-md bg-gray-800 px-2 py-1 text-xs text-white transition-transform group-hover:scale-100">
+              Card
+            </span>
+          </div>
+          <div className="group relative">
+            <Button
+              size="icon"
+              variant={view === "list" ? "solid" : "outline"}
+              onClick={() => setView("list")}
+            >
+              <TableOfContents
+                className={view === "list" ? "text-white" : "text-slate-950"}
+              />
+            </Button>
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 scale-0 rounded-md bg-gray-800 px-2 py-1 text-xs text-white transition-transform group-hover:scale-100">
+              List
+            </span>
+          </div>
+          <div className="mx-1 h-6 w-px bg-gray-800 font-bold"></div>
+
+          <div className="group relative">
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-transparent border-t-black"></div>
+              ) : (
+                <RotateCcw className="font-semibold text-slate-950" size={20} />
+              )}
+            </Button>
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 scale-0 rounded-md bg-gray-800 px-2 py-1 text-xs text-white transition-transform group-hover:scale-100">
+              Refresh
+            </span>
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
