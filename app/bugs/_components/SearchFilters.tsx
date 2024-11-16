@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import BugCard from "./BugCard";
-import { Bug } from "@prisma/client";
+import useBugs from "@/app/_hooks/useBugs";
 import { useState, useCallback } from "react";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
@@ -16,15 +16,13 @@ import {
   SelectValue,
 } from "@/app/_components/ui/select";
 
-interface SearchFilterProps {
-  bugs: Bug[];
-}
+const SearchFilters = () => {
+  const { data: bugs = [], isLoading, isError, refetch } = useBugs();
 
-const SearchFilters = ({ bugs }: SearchFilterProps) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [view, setView] = useState<"card" | "list">("card");
+  const [refreshLoading, setRefreshLoading] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState<"recent" | "old">("recent");
 
@@ -67,9 +65,30 @@ const SearchFilters = ({ bugs }: SearchFilterProps) => {
   const filteredBugs = filterBugs();
 
   const handleRefresh = async () => {
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1000);
+    setRefreshLoading(true);
+    setTimeout(async () => {
+      await refetch();
+      setRefreshLoading(false);
+    }, 1500);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-lg font-semibold">Loading bugs...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-lg font-semibold text-red-500">
+          Error fetching bugs. Please try again later.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -178,9 +197,9 @@ const SearchFilters = ({ bugs }: SearchFilterProps) => {
               size="icon"
               variant="outline"
               onClick={handleRefresh}
-              disabled={isLoading}
+              disabled={refreshLoading}
             >
-              {isLoading ? (
+              {refreshLoading ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-transparent border-t-black"></div>
               ) : (
                 <RotateCcw className="font-semibold text-slate-950" size={20} />
