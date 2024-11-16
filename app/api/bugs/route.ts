@@ -30,3 +30,16 @@ export async function POST(request: NextRequest) {
   });
   return NextResponse.json(newBug, { status: 201 });
 }
+
+export async function GET() {
+  try {
+    const bugs = await db.bug.findMany();
+    return NextResponse.json(bugs, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching bugs", error);
+    return NextResponse.json(
+      { error: "Failed to fetch bugs" },
+      { status: 500 },
+    );
+  }
+}
