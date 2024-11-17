@@ -4,9 +4,11 @@ import Link from "next/link";
 import BugCard from "./BugCard";
 import useBugs from "@/app/_hooks/useBugs";
 import { useState, useCallback } from "react";
+import BugCardSkeleton from "./BugCardSkeleton";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
+import SearchFiltersSkeleton from "./SearchFiltersSkeleton";
 import { CreditCard, RotateCcw, Search, TableOfContents } from "lucide-react";
 import {
   Select,
@@ -74,9 +76,14 @@ const SearchFilters = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-lg font-semibold">Loading bugs...</p>
-      </div>
+      <>
+        <SearchFiltersSkeleton />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <BugCardSkeleton key={index} />
+          ))}
+        </div>
+      </>
     );
   }
 
