@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import BugCard from "./BugCard";
+import BugTable from "./BugTable";
 import useBugs from "@/app/_hooks/useBugs";
-import { useState, useCallback } from "react";
 import BugCardSkeleton from "./BugCardSkeleton";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
+import React, { useState, useCallback } from "react";
 import { Button } from "@/app/_components/ui/button";
 import SearchFiltersSkeleton from "./SearchFiltersSkeleton";
 import { CreditCard, RotateCcw, Search, TableOfContents } from "lucide-react";
@@ -54,25 +55,15 @@ const SearchFilters = () => {
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
       );
-    } else if (sortOrder === "old") {
+    } else {
       return filtered.sort(
         (a, b) =>
           new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
       );
     }
-
-    return filtered;
   };
 
   const filteredBugs = filterBugs();
-
-  const handleRefresh = async () => {
-    setRefreshLoading(true);
-    setTimeout(async () => {
-      await refetch();
-      setRefreshLoading(false);
-    }, 1500);
-  };
 
   if (isLoading) {
     return (
@@ -89,13 +80,19 @@ const SearchFilters = () => {
 
   if (isError) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-lg font-semibold text-red-500">
-          Error fetching bugs. Please try again later.
-        </p>
-      </div>
+      <p className="text-red-500">
+        Error fetching bugs. Please try again later.
+      </p>
     );
   }
+
+  const handleRefresh = async () => {
+    setRefreshLoading(true);
+    setTimeout(async () => {
+      await refetch();
+      setRefreshLoading(false);
+    }, 1500);
+  };
 
   return (
     <>
@@ -115,6 +112,7 @@ const SearchFilters = () => {
             />
           </div>
         </div>
+
         <div>
           <Label htmlFor="priority" className="mb-2 block">
             Priority
@@ -131,6 +129,7 @@ const SearchFilters = () => {
             </SelectContent>
           </Select>
         </div>
+
         <div>
           <Label htmlFor="status" className="mb-2 block">
             Status
@@ -183,6 +182,7 @@ const SearchFilters = () => {
               Card
             </span>
           </div>
+
           <div className="group relative">
             <Button
               size="icon"
@@ -197,6 +197,8 @@ const SearchFilters = () => {
               List
             </span>
           </div>
+
+          {/* Separator */}
           <div className="mx-1 h-6 w-px bg-gray-800 font-bold"></div>
 
           <div className="group relative">
@@ -218,13 +220,16 @@ const SearchFilters = () => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {filteredBugs.length > 0 ? (
-          filteredBugs.map((bug) => <BugCard key={bug.id} bug={bug} />)
-        ) : (
-          <h3 className="text-xl font-semibold">No results found</h3>
-        )}
-      </div>
+
+      {view === "card" ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {filteredBugs.map((bug) => (
+            <BugCard key={bug.id} bug={bug} />
+          ))}
+        </div>
+      ) : (
+        <BugTable />
+      )}
     </>
   );
 };
