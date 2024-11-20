@@ -1,19 +1,12 @@
-/* eslint-disable */
 "use client";
 
 import React from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { ShieldHalf } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { LogOut, ShieldHalf } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+import UserDropDownMenu from "./UserDropDownMenu";
 
 const Header = () => {
   const currentPath = usePathname();
@@ -49,41 +42,15 @@ const Header = () => {
         </ul>
       </div>
       <div className="flex items-center justify-center text-sm md:text-base">
-        {status === "authenticated" && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="cursor-pointer">
-                <AvatarImage
-                  src={session.user!.image!}
-                  referrerPolicy="no-referrer"
-                />
-                <AvatarFallback>{session.user!.name![0]}</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="rounded border bg-white shadow-md">
-              {/* {session?.user?.name && (
-                <DropdownMenuItem>{session.user.name}</DropdownMenuItem>
-              )} */}
-              {session?.user?.name && (
-                <DropdownMenuItem>{session.user.email}</DropdownMenuItem>
-              )}
-              <DropdownMenuItem className="flex">
-                <Link href="/api/auth/signout" className="w-full">
-                  <Button
-                    size="sm"
-                    className="flex w-full"
-                    variant="destructive"
-                  >
-                    <LogOut className="mr-2" size={16} />
-                    <span>Log Out</span>
-                  </Button>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {status === "authenticated" && session && (
+          <UserDropDownMenu session={session} />
         )}
         {status === "unauthenticated" && (
-          <Link href="/api/auth/signin">Log In</Link>
+          <Button variant="outline" className="bg-neutral-200">
+            <Link href="/api/auth/signin" className="font-medium text-zinc-950">
+              Log In
+            </Link>
+          </Button>
         )}
       </div>
     </nav>
