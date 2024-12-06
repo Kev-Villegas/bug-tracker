@@ -5,12 +5,13 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import AsigneeSelect from "./AsigneeSelect";
 import Spinner from "@/app/_components/Spinner";
-import { Priority, Status, Bug } from "@prisma/client";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Priority, Status } from "@prisma/client";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { createBugSchema } from "@/app/_schemas/validationSchemas";
 import {
@@ -28,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/_components/ui/select";
-import AsigneeSelect from "./AsigneeSelect";
 
 interface BugForm {
   title: string;
@@ -38,42 +38,42 @@ interface BugForm {
   priority: Priority;
 }
 
-const CreateBugForm = ({ bug }: { bug: Bug }) => {
+const CreateBugForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<BugForm>({ resolver: zodResolver(createBugSchema) });
+
   const [isSubmitting, setSubmitting] = useState(false);
   const router = useRouter();
   const [priority, setPriority] = useState<Priority | undefined>();
   const [status, setStatus] = useState<Status | undefined>();
+  const [assignedToUserId, setAssignedToUserId] = useState<string | null>(null);
 
-  const handlePriorityChange = (value: Priority) => {
-    setPriority(value);
-  };
-  const handleStatusChange = (value: Status) => {
-    setStatus(value);
-  };
+  const handlePriorityChange = (value: Priority) => setPriority(value);
+  const handleStatusChange = (value: Status) => setStatus(value);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       setSubmitting(true);
       const payload = {
         ...data,
-        priority: priority,
-        status: status,
+        priority,
+        status,
+        assignedToUserId,
       };
       await axios.post("/api/bugs", payload);
-      toast.success("Bug Reported Successfully");
+      toast.success("Bug reported successfully");
+      router.push("/bugs");
     } catch (error) {
       console.error("Failed to report bug", error);
       toast.error("Failed to report bug");
     } finally {
       setSubmitting(false);
-      router.push("/bugs");
     }
   });
+
   return (
     <Card className="mx-auto mb-6 w-full max-w-md">
       <CardHeader>
@@ -128,7 +128,7 @@ const CreateBugForm = ({ bug }: { bug: Bug }) => {
               Assigned To:
             </Label>
             <br />
-            <AsigneeSelect bug={bug} />
+            <AsigneeSelect onAssignChange={setAssignedToUserId} />
           </div>
           <div className="grid grid-cols-4 items-center gap-1">
             <Label htmlFor="priority" className="text-start">
@@ -142,19 +142,19 @@ const CreateBugForm = ({ bug }: { bug: Bug }) => {
               <SelectContent className="border border-gray-700">
                 <SelectItem
                   value="LOW"
-                  className="cursor-pointer text-green-600 hover:bg-transparent"
+                  className="cursor-pointer text-green-600"
                 >
                   Low
                 </SelectItem>
                 <SelectItem
                   value="MEDIUM"
-                  className="cursor-pointer text-yellow-600 hover:bg-transparent"
+                  className="cursor-pointer text-yellow-600"
                 >
                   Medium
                 </SelectItem>
                 <SelectItem
                   value="HIGH"
-                  className="cursor-pointer text-red-600 hover:bg-transparent"
+                  className="cursor-pointer text-red-600"
                 >
                   High
                 </SelectItem>
@@ -173,19 +173,19 @@ const CreateBugForm = ({ bug }: { bug: Bug }) => {
               <SelectContent className="border border-gray-700">
                 <SelectItem
                   value="OPEN"
-                  className="cursor-pointer bg-transparent text-sky-500"
+                  className="cursor-pointer text-sky-500"
                 >
                   Open
                 </SelectItem>
                 <SelectItem
                   value="IN_PROGRESS"
-                  className="cursor-pointer bg-transparent text-yellow-600"
+                  className="cursor-pointer text-yellow-600"
                 >
                   In Progress
                 </SelectItem>
                 <SelectItem
                   value="RESOLVED"
-                  className="cursor-pointer bg-transparent text-green-600"
+                  className="cursor-pointer text-green-600"
                 >
                   Resolved
                 </SelectItem>
@@ -196,12 +196,10 @@ const CreateBugForm = ({ bug }: { bug: Bug }) => {
         <CardFooter>
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? (
-              <>
-                <div className="flex items-center">
-                  <span className="mr-2 tracking-wider">Reporting...</span>
-                  <Spinner />
-                </div>
-              </>
+              <div className="flex items-center">
+                <span className="mr-2">Reporting...</span>
+                <Spinner />
+              </div>
             ) : (
               "Submit & Report Bug"
             )}

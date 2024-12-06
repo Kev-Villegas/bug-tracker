@@ -1,6 +1,5 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
-import axios from "axios";
-import { Bug } from "@prisma/client";
 import useUsers from "@/app/_hooks/useUsers";
 import {
   Select,
@@ -11,26 +10,28 @@ import {
 } from "@/app/_components/ui/select";
 
 interface AsigneeSelectProps {
-  bug?: Bug;
+  defaultAssignee?: string;
+  onAssignChange?: (userId: string | null) => void;
 }
 
-const AsigneeSelect = ({ bug }: AsigneeSelectProps) => {
+const AsigneeSelect = ({
+  defaultAssignee,
+  onAssignChange,
+}: AsigneeSelectProps) => {
   const { data: users, error, isLoading } = useUsers();
 
-  if (error) return <p>Error</p>;
+  if (error) return <p>Error loading users</p>;
+  if (isLoading) return <p>Loading users...</p>;
 
-  if (isLoading) return <p>Loading...</p>;
-
-  const assigneIssue = (userId: string) => {
-    axios.patch("/api/bugs/" + bug?.id, {
-      assignedToUserId: userId === "Unassigned" ? null : userId,
-    });
+  const handleChange = (userId: string) => {
+    const resolvedId = userId === "Unassigned" ? null : userId;
+    onAssignChange?.(resolvedId);
   };
 
   return (
     <Select
-      defaultValue={bug?.assignedToUserId || "Unassigned"}
-      onValueChange={assigneIssue}
+      value={defaultAssignee || "Unassigned"}
+      onValueChange={handleChange}
     >
       <SelectTrigger className="col-span-3 border border-gray-400">
         <SelectValue placeholder="Assign a User" />

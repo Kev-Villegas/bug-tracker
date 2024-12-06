@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
       description: body.description,
       priority: body.priority,
       status: body.status,
+      assignedToUserId: body.assignedToUserId || null,
     },
   });
   return NextResponse.json(newBug, { status: 201 });

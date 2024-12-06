@@ -3,19 +3,12 @@
 
 import { useState } from "react";
 import AsigneeSelect from "./AsigneeSelect";
-import { Ban, Pencil, Save } from "lucide-react";
+import { Pencil, Save } from "lucide-react";
 import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { Button } from "@/app/_components/ui/button";
 import { Status, Priority, Bug } from "@prisma/client";
 import { Textarea } from "@/app/_components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/_components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +18,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/_components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/_components/ui/select";
 
 interface EditBugDialogProps {
   bug: Bug;
@@ -34,21 +34,31 @@ interface EditBugDialogProps {
     description: string;
     status: Status;
     priority: Priority;
+    assignedToUserId: string | null;
   }) => void;
 }
 
 const EditBugDialog: React.FC<EditBugDialogProps> = ({ bug, onSave }) => {
-  const { title, summary, description, status, priority } = bug;
+  const { title, summary, description, status, priority, assignedToUserId } =
+    bug;
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
-  const [editStatus, setEditStatus] = useState(status);
   const [editSummary, setEditSummary] = useState(summary);
-  const [editPriority, setEditPriority] = useState(priority);
   const [editDescription, setEditDescription] = useState(description);
+  const [editStatus, setEditStatus] = useState<Status>(status);
+  const [editPriority, setEditPriority] = useState<Priority>(priority);
+  const [editAssignedTo, setEditAssignedTo] = useState<string | null>(
+    assignedToUserId,
+  );
 
   const handleStatusChange = (value: string) => setEditStatus(value as Status);
   const handlePriorityChange = (value: string) =>
     setEditPriority(value as Priority);
+
+  const handleAssignChange = (userId: string | null) => {
+    setEditAssignedTo(userId);
+  };
 
   const handleSave = () => {
     onSave({
@@ -57,6 +67,7 @@ const EditBugDialog: React.FC<EditBugDialogProps> = ({ bug, onSave }) => {
       description: editDescription,
       status: editStatus,
       priority: editPriority,
+      assignedToUserId: editAssignedTo,
     });
     setIsDialogOpen(false);
   };
@@ -114,36 +125,24 @@ const EditBugDialog: React.FC<EditBugDialogProps> = ({ bug, onSave }) => {
               Assigned To:
             </Label>
             <div className="col-span-3">
-              <AsigneeSelect bug={bug} />
+              <AsigneeSelect
+                defaultAssignee={editAssignedTo || "Unassigned"}
+                onAssignChange={handleAssignChange}
+              />
             </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="priority" className="text-right">
               Priority
             </Label>
-            <Select onValueChange={handlePriorityChange} value={editPriority}>
+            <Select value={editPriority} onValueChange={handlePriorityChange}>
               <SelectTrigger className="col-span-3 border border-gray-400">
                 <SelectValue placeholder="Select priority" />
               </SelectTrigger>
-              <SelectContent className="border border-gray-700">
-                <SelectItem
-                  value="LOW"
-                  className="cursor-pointer text-green-600"
-                >
-                  Low
-                </SelectItem>
-                <SelectItem
-                  value="MEDIUM"
-                  className="cursor-pointer text-yellow-600"
-                >
-                  Medium
-                </SelectItem>
-                <SelectItem
-                  value="HIGH"
-                  className="cursor-pointer text-red-600"
-                >
-                  High
-                </SelectItem>
+              <SelectContent>
+                <SelectItem value="LOW">Low</SelectItem>
+                <SelectItem value="MEDIUM">Medium</SelectItem>
+                <SelectItem value="HIGH">High</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -151,43 +150,21 @@ const EditBugDialog: React.FC<EditBugDialogProps> = ({ bug, onSave }) => {
             <Label htmlFor="status" className="text-right">
               Status
             </Label>
-            <Select onValueChange={handleStatusChange} value={editStatus}>
+            <Select value={editStatus} onValueChange={handleStatusChange}>
               <SelectTrigger className="col-span-3 border border-gray-400">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
-              <SelectContent className="border border-gray-700">
-                <SelectItem
-                  value="OPEN"
-                  className="cursor-pointer text-sky-600"
-                >
-                  Open
-                </SelectItem>
-                <SelectItem
-                  value="IN_PROGRESS"
-                  className="cursor-pointer text-yellow-600"
-                >
-                  In Progress
-                </SelectItem>
-                <SelectItem
-                  value="RESOLVED"
-                  className="cursor-pointer text-red-600"
-                >
-                  Resolved
-                </SelectItem>
+              <SelectContent>
+                <SelectItem value="OPEN">Open</SelectItem>
+                <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                <SelectItem value="RESOLVED">Resolved</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
-        <DialogFooter className="flex justify-between">
-          <Button
-            variant="destructive"
-            className="flex items-center"
-            onClick={() => setIsDialogOpen(false)}
-          >
-            <Ban className="mr-1" size={20} /> Cancel
-          </Button>
+        <DialogFooter>
           <Button onClick={handleSave}>
-            <Save className="mr-1" size={20} /> Save changes
+            <Save className="mr-1" size={16} /> Save Changes
           </Button>
         </DialogFooter>
       </DialogContent>
